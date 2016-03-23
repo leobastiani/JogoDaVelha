@@ -1,6 +1,6 @@
 # Nós mexemos:
 subl
-~*.pl~
+*.pl~
 
 # Windows image file caches
 Thumbs.db

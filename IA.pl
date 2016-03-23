@@ -42,45 +42,42 @@ novoEstado(Matriz) :-
 	!.
 
 
-% dada uma matriz, devo encontrar a reposta em estadoResposta
-encontrarResposta(Matriz, Respostas) :-
-	% se ja possuo o estado, sem girar ja retorno ele
-	estadoResposta(Matriz, Respostas),
-	! % se achei, nao procuro mais
-	;
-	% mas se eu nao achei, procuro nas giradas
-	encontrarResposta(Matriz, Respostas, 1).
-
-% vou giro e encontro
-encontrarResposta(Matriz, Respostas, _) :-
-	matriz3x3GirarH(Matriz, MatrizGirada),
-	estadoResposta(MatrizGirada, Respostas),
-	!. % ja encontrei mesmo
-
-% giro e procuro de novo
-encontrarResposta(Matriz, Respostas, NumeroGiradas) :-
-	NovoGiradas is NumeroGiradas+1,
-	NumeroGiradas =< 3, % vou dar 3 giradas
-	matriz3x3GirarH(Matriz, MatrizGirada),
-	encontrarResposta(MatrizGirada, Respostas, NovoGiradas).
-
-
-% deixa a IA determinar qual a peça q vai jogar
-iaPlay(Matriz, NovaMatriz) :-
-	descobrirXouO(Matriz, XouO),
-	iaPlay(Matriz, XouO, NovaMatriz).
-
-
-% caso de existir um estadoResposta
-iaPlay(Matriz, XouO, NovaMatriz) :-
-	encontrarResposta(Matriz, Respostas),
+marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-
 	% posicaoo linear eh algo entre [1, 2, 3, 4, 5, 6, 7, 8, 9]
 	random_member(PosLinear, Respostas),
 	% converto a posicao para linha e coluna da martiz
 	converterPosLinear(PosLinear, IndexLin, IndexCol),
 	% substituo o elemento na matriz
-	matrizSet(XouO, Matriz, IndexLin, IndexCol, NovaMatriz),
-	!. % ja encontrei a solucao
+	matrizSet(XouO, Matriz, IndexLin, IndexCol, MatrizResposta).
+
+
+% dada uma matriz, devo encontrar a reposta em estadoResposta
+iaMarcar(Matriz, XouO, MatrizResposta, Giradas) :-
+	% se ja possuo o estado, sem girar ja retorno ele
+	estadoResposta(Matriz, Respostas),
+	% encontrei a resposta, vou marcá-la
+	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta),
+	! % se achei, nao procuro mais
+	;
+	Giradas =< 3,
+	NovaGiradas is Giradas + 1,
+	matriz3x3GirarH(Matriz, MatrizGirada),
+	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NovaGiradas),
+	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta),
+	!.
+
+
+% deixa a IA determinar qual a peca q vai jogar
+iaPlay(Matriz, NovaMatriz) :-
+	descobrirXouO(Matriz, XouO),
+	iaPlay(Matriz, XouO, NovaMatriz),
+	!. % nao volta mais aqui
+
+
+% caso de existir um estadoResposta
+iaPlay(Matriz, XouO, NovaMatriz) :-
+	iaMarcar(Matriz, XouO, NovaMatriz, 0),
+	!.
 
 
 % caso de nao souber onde jogar
