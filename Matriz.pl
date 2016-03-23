@@ -3,7 +3,6 @@ matriz3x3GirarH([
 	[A4, A5, A6],
 	[A7, A8, A9]
 ],
-
 [
 	[A7, A4, A1],
 	[A8, A5, A2],
@@ -15,7 +14,6 @@ matriz3x3GirarAH([
 	[A4, A5, A6],
 	[A7, A8, A9]
 ],
-
 [
 	[A3, A6, A9],
 	[A2, A5, A8],
@@ -57,14 +55,16 @@ numZerosVetor([0|Xs], Resp) :-
 numZerosVetor([_|Xs], Resp) :-
 	numZerosVetor(Xs, Resp).
 
+% ja sei como calcular o número de zeros num vetor
+% soh transformar uma matriz em um vetor e contar
 numZerosMatriz(Matriz, Resposta) :-
 	flatten(Matriz, Vetor),
 	numZerosVetor(Vetor, Resposta).
 
 
 /*
- * como converter uma posi?o linar para index da linha e da coluna
- * retorna false se a posi?o for inv?ida
+ * como converter uma posicao linar para index da linha e da coluna
+ * retorna false se a posicaoo linear for invalida
  */
 converterPosLinear(PosLinear, Linha, Coluna) :-
 	PosLinear >= 1,
@@ -78,12 +78,29 @@ matrizSet(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 	nth0(IndexLin, Matriz, Lin, LinResto),
 	% obtem o elemento
 	nth0(IndexCol, Lin, Elem, ColResto),
-	% o Elem deve ser 0, se n? ?porque h?outro elemento nessa posi?o
+	% o Elem deve ser 0, se nao eh porque ha outro elemento nessa posicao
 	Elem == 0,
 	% troca o elemento
 	nth0(IndexCol, NovaLin, XouO, ColResto),
 	% troca a linha
 	nth0(IndexLin, Resposta, NovaLin, LinResto).
+
+
+
+posValida(Pos, Matriz) :-
+	converterPosLinear(Pos, IndLin, IndCol),
+	nth0(IndLin, Matriz, Lin),
+	nth0(IndCol, Lin, Elem),
+	Elem == 0.
+
+
+vetorPosValidas([X], Matriz) :- posValida(X, Matriz), !.
+vetorPosValidas([X|Xs], Matriz) :-
+	posValida(X, Matriz),
+	vetorPosValidas(Xs, Matriz),
+	!.
+
+
 
 
 printMatriz(M) :-

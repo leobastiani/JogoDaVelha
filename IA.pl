@@ -18,6 +18,8 @@ carregarBD :-
 	exists_file('JogoDaVelha.bd'),
 	consult('JogoDaVelha.bd')
 	;
+	% mesmo se o arquivo nao existe
+	% e mesmo se a consulta falhar, devo retornar verdadeiro
 	true.
 
 
@@ -37,6 +39,7 @@ novoEstado(Matriz) :-
 	printJogo(Matriz),
 	read(Str),
 	is_list(Str), % garante que Str eh uma lista
+	vetorPosValidas(Str, Matriz), % garante que as posições desse vetor são válidas
 	assertz(estadoResposta(Matriz, Str)),
 	salvarBD,
 	!.
@@ -52,31 +55,36 @@ marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-
 
 
 % dada uma matriz, devo encontrar a reposta em estadoResposta
-iaMarcar(Matriz, XouO, MatrizResposta, Giradas) :-
+iaMarcar(Matriz, XouO, MatrizResposta) :-
+	% começo sem girar
+	iaMarcar(Matriz, XouO, MatrizResposta, 0).
+
+
+iaMarcar(Matriz, XouO, MatrizResposta, NumGiradas) :-
 	% se ja possuo o estado, sem girar ja retorno ele
 	estadoResposta(Matriz, Respostas),
-	% encontrei a resposta, vou marcá-la
-	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta),
-	! % se achei, nao procuro mais
-	;
-	Giradas =< 3,
-	NovaGiradas is Giradas + 1,
+	% encontrei a resposta, vou marc?la
+	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
+	; % se não achei a resposta, continuo procurando nas giradas
+	NumGiradas =< 3,
+	NumGiradasMasiUm is NumGiradas + 1,
 	matriz3x3GirarH(Matriz, MatrizGirada),
-	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NovaGiradas),
-	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta),
-	!.
+	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
+	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta).
+
 
 
 % deixa a IA determinar qual a peca q vai jogar
 iaPlay(Matriz, NovaMatriz) :-
 	descobrirXouO(Matriz, XouO),
-	iaPlay(Matriz, XouO, NovaMatriz),
-	!. % nao volta mais aqui
+	iaPlay(Matriz, XouO, NovaMatriz).
 
 
 % caso de existir um estadoResposta
 iaPlay(Matriz, XouO, NovaMatriz) :-
-	iaMarcar(Matriz, XouO, NovaMatriz, 0),
+	% tento marcar, se eu conseguir
+	% não preciso tentar mais
+	iaMarcar(Matriz, XouO, NovaMatriz),
 	!.
 
 

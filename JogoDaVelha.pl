@@ -14,10 +14,19 @@ printJogo(_) :-
 descobrirXouO(Matriz, XouO) :-
 	numZerosMatriz(Matriz, NumZeros),
 	(
-		% caso se NumZeros for ?par, retorna x
+		% caso se NumZeros for impar, retorna x
 		(NumZeros mod 2) =:= 1,
 		XouO = x
 		;
 		% se for par
 		XouO = o
 	), !.
+
+
+
+
+% Exemplo de comando com iaPlay
+% % Cria uma nova matriz vazia
+% matriz3x3Vazia(Mvazia),
+% % faço uma jogada com essa matriz
+% iaPlay(Mvazia, M1Play).
