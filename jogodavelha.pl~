@@ -1,0 +1,20 @@
+% Carrega os arquivos que auxiliaram o jogo
+?- ['Matriz', 'IA'].
+
+
+printJogo(_) :-
+	matriz3x3PosLinear(ModeloMatriz),
+	printMatriz(ModeloMatriz).
+
+
+
+descobrirXouO(Matriz, XouO) :-
+	numZerosMatriz(Matriz, NumZeros),
+	(
+		% caso se NumZeros for ?par, retorna 'X'
+		(NumZeros mod 2) == 1,
+		XouO = 'X'
+		;
+		% se for par
+		XouO = 'O'
+	), !.
