@@ -1,15 +1,15 @@
 % estadoResposta possui dois parametros
-% Estado que ?uma matriz 3x3 que dado esse determinado estado, vamos considerar a resposta
-% Resposta que ?um vetor com os n?mero de cada casa correspondente
+% Estado que eh uma matriz 3x3 que dado esse determinado estado, vamos considerar a resposta
+% Resposta que eh um vetor com os numero de cada casa correspondente
 
 % Exemplo:
 % para o estado:
 % [
-%	[0, 0, X], % posi?es: [0, 1, 2],
-%	[0, O, 0], % posi?es: [3, 4, 5],
-%	[X, 0, 0]  % posi?es: [6, 7, 8]
+%	[0, 0, X], % posicoes: [0, 1, 2],
+%	[0, O, 0], % posicoes: [3, 4, 5],
+%	[X, 0, 0]  % posicoes: [6, 7, 8]
 % ]
-% Resposta ?[1, 3, 5, 7]
+% Resposta eh [1, 3, 5, 7]
 :- dynamic estadoResposta/2.
 
 
@@ -46,9 +46,9 @@ novoEstado(Matriz) :-
 encontrarResposta(Matriz, Respostas) :-
 	% se ja possuo o estado, sem girar ja retorno ele
 	estadoResposta(Matriz, Respostas),
-	! % se achei, n? procuro mais
+	! % se achei, nao procuro mais
 	;
-	% mas se eu n? achei, procuro nas giradas
+	% mas se eu nao achei, procuro nas giradas
 	encontrarResposta(Matriz, Respostas, 1).
 
 % vou giro e encontro
@@ -65,7 +65,7 @@ encontrarResposta(Matriz, Respostas, NumeroGiradas) :-
 	encontrarResposta(MatrizGirada, Respostas, NovoGiradas).
 
 
-% deixa a IA determinar qual a peÃ§a q vai jogar
+% deixa a IA determinar qual a peça q vai jogar
 iaPlay(Matriz, NovaMatriz) :-
 	descobrirXouO(Matriz, XouO),
 	iaPlay(Matriz, XouO, NovaMatriz).
