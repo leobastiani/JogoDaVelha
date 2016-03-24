@@ -28,5 +28,5 @@ descobrirXouO(Matriz, XouO) :-
 % Exemplo de comando com iaPlay
 % % Cria uma nova matriz vazia
 % matriz3x3Vazia(Mvazia),
-% % faço uma jogada com essa matriz
+% % fa? uma jogada com essa matriz
 % iaPlay(Mvazia, M1Play).

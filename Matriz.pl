@@ -55,7 +55,7 @@ numZerosVetor([0|Xs], Resp) :-
 numZerosVetor([_|Xs], Resp) :-
 	numZerosVetor(Xs, Resp).
 
-% ja sei como calcular o número de zeros num vetor
+% ja sei como calcular o n?mero de zeros num vetor
 % soh transformar uma matriz em um vetor e contar
 numZerosMatriz(Matriz, Resposta) :-
 	flatten(Matriz, Vetor),
@@ -73,6 +73,15 @@ converterPosLinear(PosLinear, Linha, Coluna) :-
 	Coluna is (PosLinear-1) mod 3.
 
 
+% seta na matriz passando a posicao linear
+matrizSet(XouO, Matriz, PosLinear, Resposta) :-
+	% primeiro converte a posicao linear
+	converterPosLinear(PosLinear, Linha, Coluna),
+	% agora escreve usando a propria funcao
+	matrizSet(XouO, Matriz, Linha, Coluna, Resposta),
+	!.
+
+% seta na matriz passando a linha e a coluna
 matrizSet(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 	% obtem a linha
 	nth0(IndexLin, Matriz, Lin, LinResto),
