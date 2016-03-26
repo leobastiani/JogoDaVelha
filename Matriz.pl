@@ -51,9 +51,11 @@ numZerosVetor([0], 1) :- !.
 numZerosVetor([_], 0) :- !.
 numZerosVetor([0|Xs], Resp) :-
 	numZerosVetor(Xs, RespXs),
-	Resp is 1+RespXs.
+	Resp is 1+RespXs,
+	!.
 numZerosVetor([_|Xs], Resp) :-
-	numZerosVetor(Xs, Resp).
+	numZerosVetor(Xs, Resp),
+	!.
 
 % ja sei como calcular o n?mero de zeros num vetor
 % soh transformar uma matriz em um vetor e contar
@@ -67,22 +69,27 @@ numZerosMatriz(Matriz, Resposta) :-
  * retorna false se a posicaoo linear for invalida
  */
 converterPosLinear(PosLinear, Linha, Coluna) :-
-	PosLinear >= 1,
-	PosLinear =< 9,
+	% PosLinear tem que estar entre 1 e 9
+	between(1, 9, PosLinear),
+	between(0, 2, Linha),
+	between(0, 2, Coluna),
 	Linha is 2-((PosLinear-1) // 3),
 	Coluna is (PosLinear-1) mod 3.
 
 
 % seta na matriz passando a posicao linear
-matrizSet(XouO, Matriz, PosLinear, Resposta) :-
+setMatriz(XouO, Matriz, PosLinear, Resposta) :-
 	% primeiro converte a posicao linear
 	converterPosLinear(PosLinear, Linha, Coluna),
 	% agora escreve usando a propria funcao
-	matrizSet(XouO, Matriz, Linha, Coluna, Resposta),
+	setMatriz(XouO, Matriz, Linha, Coluna, Resposta),
 	!.
 
+
 % seta na matriz passando a linha e a coluna
-matrizSet(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
+setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
+	% condicao de existencia
+	between(0, 2, IndexLin), between(0, 2, IndexCol),
 	% obtem a linha
 	nth0(IndexLin, Matriz, Lin, LinResto),
 	% obtem o elemento
@@ -92,26 +99,24 @@ matrizSet(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 	% troca o elemento
 	nth0(IndexCol, NovaLin, XouO, ColResto),
 	% troca a linha
-	nth0(IndexLin, Resposta, NovaLin, LinResto).
+	nth0(IndexLin, Resposta, NovaLin, LinResto),
+	!.
 
 
-
-posValida(Pos, Matriz) :-
-	converterPosLinear(Pos, IndLin, IndCol),
-	nth0(IndLin, Matriz, Lin),
-	nth0(IndCol, Lin, Elem),
+% retorna uma PosLinear em que eu posso ocupar
+jogadaPossivel(PosLinear, Matriz) :-
+	between(1, 9, PosLinear),
+	getMatriz(PosLinear, Matriz, Elem),
 	Elem == 0.
 
 
-vetorPosValidas([X], Matriz) :- posValida(X, Matriz), !.
-vetorPosValidas([X|Xs], Matriz) :-
-	posValida(X, Matriz),
-	vetorPosValidas(Xs, Matriz),
-	!.
-
+% obtme um elemento da matriz atrav? da posi?o linear
+getMatriz(PosLinear, Matriz, Elem) :-
+	converterPosLinear(PosLinear, IndLinha, IndColuna),
+	nth0(IndLinha, Matriz, Linha),
+	nth0(IndColuna, Linha, Elem).
 
 
 
 printMatriz(M) :-
 	format("~w\n~w\n~w\n", M).
-

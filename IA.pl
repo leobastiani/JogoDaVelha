@@ -39,7 +39,9 @@ novoEstado(Matriz) :-
 	printJogo(Matriz),
 	read(Str),
 	is_list(Str), % garante que Str eh uma lista
-	vetorPosValidas(Str, Matriz), % garante que as posi?es desse vetor s? v?idas
+	% garante que as posicoes desse vetor fazem parte da solucao
+	% de posicoes validas
+	findall(PosLinear, jogadaPossivel(PosLinear, Matriz), Str),
 	assertz(estadoResposta(Matriz, Str)),
 	salvarBD,
 	!.
@@ -49,7 +51,7 @@ marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-
 	% posicaoo linear eh algo entre [1, 2, 3, 4, 5, 6, 7, 8, 9]
 	random_member(PosLinear, Respostas),
 	% substituo o elemento na matriz
-	matrizSet(XouO, Matriz, PosLinear, MatrizResposta).
+	setMatriz(XouO, Matriz, PosLinear, MatrizResposta).
 
 
 % dada uma matriz, devo encontrar a reposta em estadoResposta
@@ -65,7 +67,7 @@ iaMarcar(Matriz, XouO, MatrizResposta, NumGiradas) :-
 	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
 	; % se n? achei a resposta, continuo procurando nas giradas
 	NumGiradas =< 3,
-	NumGiradasMasiUm is NumGiradas + 1,
+	NumGiradasMasiUm = NumGiradas + 1,
 	matriz3x3GirarH(Matriz, MatrizGirada),
 	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
 	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta).
