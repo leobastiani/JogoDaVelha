@@ -1,100 +1,111 @@
-% estadoResposta possui dois parametros
-% Estado que eh uma matriz 3x3 que dado esse determinado estado, vamos considerar a resposta
-% Resposta que eh um vetor com os numero de cada casa correspondente
-
+% ?aquela jogada que se eu fizer, eu ganho o jogo
 % Exemplo:
-% para o estado:
-% [
-%	[0, 0, X], % posicoes: [0, 1, 2],
-%	[0, O, 0], % posicoes: [3, 4, 5],
-%	[X, 0, 0]  % posicoes: [6, 7, 8]
-% ]
-% Resposta eh [1, 3, 5, 7]
-:- dynamic estadoResposta/2.
-
-
-% carrega todos os estados
-carregarBD :-
-	exists_file('JogoDaVelha.bd'),
-	consult('JogoDaVelha.bd')
-	;
-	% mesmo se o arquivo nao existe
-	% e mesmo se a consulta falhar, devo retornar verdadeiro
-	true.
-
-
-% salva todos os estados
-salvarBD :-
-	tell('JogoDaVelha.bd'),
-	listing(estadoResposta),
-	told.
-
-
-
-estadoFromTeclado(Matriz, ListaPos) :-
-	writeln('Por favor, digite um vetor de posicoes possiveis para esse estado.'),
-	writeln('Devem ser algo como [1, 3, 5, 6, 7],'),
-	writeln('seguindo a regra.'),
-	printJogo(Matriz),
-	read(ListaPos),
-	is_list(ListaPos), % garante que ListaPos eh uma lista
-	% garante que as posicoes desse vetor fazem parte da solucao
-	% de posicoes validas
-	findall(PosLinear, jogadaPossivel(PosLinear, Matriz), ListaPos).
-
-% cria um novo estado a partir das regras inseridas pelo teclado
-novoEstado(Matriz) :-
-	repeat, % existe um false no caso de nao ser uma lista
-	estadoFromTeclado(Matriz, ListaPos),
-	assertz(estadoResposta(Matriz, ListaPos)),
-	salvarBD,
-	!.
-
-
-marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-
-	% posicaoo linear eh algo entre [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	random_member(PosLinear, Respostas),
-	% substituo o elemento na matriz
-	setMatriz(XouO, Matriz, PosLinear, MatrizResposta).
-
-
-% dada uma matriz, devo encontrar a reposta em estadoResposta
-iaMarcar(Matriz, XouO, MatrizResposta) :-
-	% come? sem girar
-	iaMarcar(Matriz, XouO, MatrizResposta, 0).
-
-
-iaMarcar(Matriz, XouO, MatrizResposta, NumGiradas) :-
-	% se ja possuo o estado, sem girar ja retorno ele
-	estadoResposta(Matriz, Respostas),
-	% encontrei a resposta, vou marc?la
-	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
-	; % se n? achei a resposta, continuo procurando nas giradas
-	NumGiradas =< 3,
-	NumGiradasMasiUm = NumGiradas + 1,
-	matriz3x3GirarH(Matriz, MatrizGirada),
-	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
-	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta).
-
-
-
-% deixa a IA determinar qual a peca q vai jogar
-iaPlay(Matriz, NovaMatriz) :-
+%          [[ , , ],               [[ , ,x],
+% Matriz =  [ ,x,o], e NovaMatriz = [ ,x,o],
+%           [x, ,o]]                [x, ,o]]
+jogadaVitoriosa(Matriz, PosLinear, NovaMatriz) :-
+	% descobrir oq eu tenho q jogar 
 	descobrirXouO(Matriz, XouO),
-	iaPlay(Matriz, XouO, NovaMatriz).
+	% deve ser uma posi?o v?ida
+	jogadaPossivel(PosLinear, Matriz),
+	% vou marcar
+	setMatriz(XouO, Matriz, PosLinear, NovaMatriz),
+	% deve haver vit?ia na nova matriz
+	vitoria(NovaMatriz).
 
 
-% caso de existir um estadoResposta
-iaPlay(Matriz, XouO, NovaMatriz) :-
-	% tento marcar, se eu conseguir
-	% n? preciso tentar mais
-	iaMarcar(Matriz, XouO, NovaMatriz),
-	!.
+% ?aquela que ?preciso jogar, se n? eu perco o jogo
+% Exemplo:
+%          [[ , , ],               [[ , , ],
+% Matriz =  [ ,x,o], e NovaMatriz = [ ,x,o],
+%           [ ,x,o]]                [ ,x,o]]
+jogadaDefensiva(Matriz, PosLinear, NovaMatriz) :-
+	descobrirXouO(Matriz, MeuXouO),
+	descobrirXouO(MeuXouO, AdvXouO),
+	jogadaPossivel(PosLinear, Matriz),
+	setMatriz(AdvXouO, Matriz, PosLinear, MatrizPerdedora),
+	vitoria(MatrizPerdedora),
+	% j?sei onde o MeuXouO deve jogar
+	setMatriz(MeuXouO, Matriz, PosLinear, NovaMatriz).
 
 
-% caso de nao souber onde jogar
-iaPlay(Matriz, XouO, NovaMatriz) :-
-	novoEstado(Matriz),
-	% agora que eu tenho o novo estado, devo jogar nele
-	iaPlay(Matriz, XouO, NovaMatriz),
-	!. % ja encontrei a solucao
+
+
+% ?aquele tipo de jogada que o oponente precisa obrigatoriamente
+% se defender, ent? a minha pr?ima jogada ?uma jogada vitoriosa
+% ou outra jogada que faz o oponente se defender
+% Exemplo:
+%          [[ , ,o],               [[ , ,o],
+% Matriz =  [ ,x,o], e NovaMatriz = [ ,x,o],
+%           [x, , ]]                [x, ,x]]
+jogadaPreparativa(Matriz, PosLinear, MinhaResposta) :-
+	descobrirXouO(Matriz, MeuXouO),
+	jogadaPossivel(PosLinear, Matriz),
+	setMatriz(MeuXouO, Matriz, PosLinear, MinhaResposta),
+	% se meu adversario não consegue ganhar
+	not(jogadaVitoriosa(MinhaResposta, _, _)),
+	% se meu adversario deve fazer uma jogada defensiva
+	jogadaDefensiva(MinhaResposta, _, RespAdv),
+	% deve haver uma jogada vitoriosa depois de uma play
+	% o adv n? pode ter ganhado
+	(
+		% DUVIDA
+		% porque tem exclamação?
+		jogadaVitoriosa(RespAdv, _, _), !
+		;
+		jogadaPreparativa(RespAdv, _, _)
+	).
+
+
+
+% uma jogada em que abro brecha para que meu adversario
+% faça uma jogada preparativa
+% Exemplo:
+%          [[ , , ],               [[ , , ],
+%  [Matriz =  ,x, ], [ e NovaMatriz = ,x,o],
+%           [ , , ]]                [ , , ]]
+jogadaPerdedora(Matriz, PosLinear, MinhaResposta) :-
+	descobrirXouO(Matriz, MeuXouO),
+	jogadaPossivel(PosLinear, Matriz),
+	setMatriz(MeuXouO, Matriz, PosLinear, MinhaResposta),
+	% se a resposta do advers?io for preparativa
+	jogadaPreparativa(MinhaResposta, _, _).
+
+
+% Uma jogada qualquer
+% Exemplo:
+%          [[ , , ],               [[ , , ],
+%  [Matriz =  ,x, ], [ e NovaMatriz = ,x, ],
+%           [ , , ]]                [ , ,o]]
+jogadaQualquer(Matriz, PosLinear, NovaMatriz) :-
+	jogadaPossivel(PosLinear, Matriz),
+	descobrirXouO(Matriz, XouO),
+	setMatriz(XouO, Matriz, PosLinear, NovaMatriz),
+	% se a nova matriz n? for perdedora
+	not(jogadaPerdedora(Matriz, PosLinear, NovaMatriz)).
+
+
+
+jogadaAleatoria(Jogada, Matriz, Resp) :-
+	findall(NovaMatriz, call(Jogada, Matriz, _, NovaMatriz), ListaNovaMatriz),
+	random_member(Resp, ListaNovaMatriz).
+
+
+jogada(Matriz, NovaMatriz) :-
+	not(fimDeJogo(Matriz)),
+	(
+		% DUVIDA
+		% gostaria que jogada fosse uma função que me retornasse as jogadas possiveis
+		% mas se houver jogadas vitoriiosas, não procuro mais
+		% se houver jogada defensiva, nao procuro mais
+		% se houver jogada preparativa, nao procuro mais
+		% por fim, faço uma jogada qlqr
+		% ou seja, gostaria de usar o ; em jogada listando todas as jogadas
+		jogadaAleatoria(jogadaVitoriosa, Matriz, NovaMatriz), !
+		;
+		jogadaAleatoria(jogadaDefensiva, Matriz, NovaMatriz), !
+		;
+		jogadaAleatoria(jogadaPreparativa, Matriz, NovaMatriz), !
+		;
+		jogadaAleatoria(jogadaQualquer, Matriz, NovaMatriz), !
+	).

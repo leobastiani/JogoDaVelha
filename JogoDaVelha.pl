@@ -96,6 +96,3 @@ fimDeJogo(Matriz) :-
 		numZerosMatriz(Matriz, NumZeros),
 		NumZeros == 0
 	).
-
-
-

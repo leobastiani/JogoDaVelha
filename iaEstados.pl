@@ -71,7 +71,7 @@ iaMarcar(Matriz, XouO, MatrizResposta, NumGiradas) :-
 	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
 	; % se n? achei a resposta, continuo procurando nas giradas
 	NumGiradas =< 3,
-	NumGiradasMasiUm = NumGiradas + 1,
+	NumGiradasMasiUm is NumGiradas + 1,
 	matriz3x3GirarH(Matriz, MatrizGirada),
 	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
 	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta).

@@ -47,24 +47,11 @@ matriz3x3PosLinear([
 
 
 
-
-% conta a qntidade de elementos numa lista, por exemplo:
-% n?mero de zeros em [0,9,0] ?2
-% Resp deve ser uma variavel
-countElemList(Lista, ListaElem, Resp) :-
-	% caso se eu passar uma lista de elementos
-	is_list(ListaElem),
-	% DUVIDA
-	% Porque ficou muito melhor?
-	aggregate_all(count, (member(Elem, Lista), memberchk(Elem, ListaElem)), Resp), !.
-countElemList(Lista, Elem, Resp) :-
-	countElemList(Lista, [Elem], Resp), !.
-
-
 % ja sei como calcular o n?mero de zeros num vetor
 % soh transformar uma matriz em um vetor e contar
 % Resp deve ser uma variavel
 numZerosMatriz(Matriz, Resposta) :-
+	var(Resposta),
 	flatten(Matriz, Vetor),
 	countElemList(Vetor, 0, Resposta).
 
@@ -81,6 +68,7 @@ converterPosLinear(PosLinear, Linha, Coluna) :-
 	Linha is 2-((PosLinear-1) // 3),
 	Coluna is (PosLinear-1) mod 3.
 
+
 converterPosLinear(PosLinear, Linha, Coluna) :-
 	% caso de PosLinear ser variavel
 	var(PosLinear),
@@ -96,6 +84,7 @@ setMatriz(XouO, Matriz, PosLinear, Resposta) :-
 	% agora escreve usando a propria funcao
 	setMatriz(XouO, Matriz, Linha, Coluna, Resposta),
 	!.
+
 
 
 % seta na matriz passando a linha e a coluna
@@ -131,4 +120,4 @@ getMatriz(PosLinear, Matriz, Elem) :-
 
 % imprime a matriz
 printMatriz(M) :-
-	format("~w\n~w\n~w\n", M).
+	format("[~w,\n ~w,\n ~w]\n", M).
