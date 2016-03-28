@@ -46,22 +46,27 @@ matriz3x3PosLinear([
 ]).
 
 
-numZerosVetor([], 0) :- !.
-numZerosVetor([0], 1) :- !.
-numZerosVetor([_], 0) :- !.
-numZerosVetor([0|Xs], Resp) :-
-	numZerosVetor(Xs, RespXs),
-	Resp is 1+RespXs,
-	!.
-numZerosVetor([_|Xs], Resp) :-
-	numZerosVetor(Xs, Resp),
-	!.
+
+
+% conta a qntidade de elementos numa lista, por exemplo:
+% n?mero de zeros em [0,9,0] ?2
+% Resp deve ser uma variavel
+countElemList(Lista, ListaElem, Resp) :-
+	% caso se eu passar uma lista de elementos
+	is_list(ListaElem),
+	% DUVIDA
+	% Porque ficou muito melhor?
+	aggregate_all(count, (member(Elem, Lista), memberchk(Elem, ListaElem)), Resp), !.
+countElemList(Lista, Elem, Resp) :-
+	countElemList(Lista, [Elem], Resp), !.
+
 
 % ja sei como calcular o n?mero de zeros num vetor
 % soh transformar uma matriz em um vetor e contar
+% Resp deve ser uma variavel
 numZerosMatriz(Matriz, Resposta) :-
 	flatten(Matriz, Vetor),
-	numZerosVetor(Vetor, Resposta).
+	countElemList(Vetor, 0, Resposta).
 
 
 /*
@@ -70,11 +75,18 @@ numZerosMatriz(Matriz, Resposta) :-
  */
 converterPosLinear(PosLinear, Linha, Coluna) :-
 	% PosLinear tem que estar entre 1 e 9
+	% caso de PosLinear nao ser variavel
+	nonvar(PosLinear),
 	between(1, 9, PosLinear),
-	between(0, 2, Linha),
-	between(0, 2, Coluna),
 	Linha is 2-((PosLinear-1) // 3),
 	Coluna is (PosLinear-1) mod 3.
+
+converterPosLinear(PosLinear, Linha, Coluna) :-
+	% caso de PosLinear ser variavel
+	var(PosLinear),
+	between(0, 2, Linha),
+	between(0, 2, Coluna),
+	PosLinear is (2-Linha)*3+Coluna+1.
 
 
 % seta na matriz passando a posicao linear
@@ -110,13 +122,13 @@ jogadaPossivel(PosLinear, Matriz) :-
 	Elem == 0.
 
 
-% obtme um elemento da matriz atrav? da posi?o linear
+% obtem um elemento da matriz atrav? da posi?o linear
 getMatriz(PosLinear, Matriz, Elem) :-
 	converterPosLinear(PosLinear, IndLinha, IndColuna),
 	nth0(IndLinha, Matriz, Linha),
 	nth0(IndColuna, Linha, Elem).
 
 
-
+% imprime a matriz
 printMatriz(M) :-
 	format("~w\n~w\n~w\n", M).
