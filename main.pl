@@ -34,3 +34,6 @@ main(_) :-
 	jogada(M9, M10),
 	printJogo(M10),
 	nl.
+
+
+test :- main.
