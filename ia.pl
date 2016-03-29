@@ -51,7 +51,7 @@ jogadaPreparativa(Matriz, PosLinear, MinhaResposta) :-
 	(
 		% DUVIDA
 		% porque tem exclama?o?
-		jogadaVitoriosa(RespAdv, _, _), !
+		jogadaVitoriosa(RespAdv, _, _)
 		;
 		jogadaPreparativa(RespAdv, _, _)
 	).
@@ -86,11 +86,6 @@ jogadaQualquer(Matriz, PosLinear, NovaMatriz) :-
 
 
 
-jogadaAleatoria(Jogada, Matriz, Resp) :-
-	findall(NovaMatriz, call(Jogada, Matriz, _, NovaMatriz), ListaNovaMatriz),
-	random_member(Resp, ListaNovaMatriz).
-
-
 jogada(Matriz, NovaMatriz) :-
 	not(fimDeJogo(Matriz)),
 	(
@@ -101,11 +96,11 @@ jogada(Matriz, NovaMatriz) :-
 		% se houver jogada preparativa, nao procuro mais
 		% por fim, fa? uma jogada qlqr
 		% ou seja, gostaria de usar o ; em jogada listando todas as jogadas
-		jogadaAleatoria(jogadaVitoriosa, Matriz, NovaMatriz), !
+		jogadaVitoriosa(Matriz, _, NovaMatriz)
 		;
-		jogadaAleatoria(jogadaDefensiva, Matriz, NovaMatriz), !
+		jogadaDefensiva(Matriz, _, NovaMatriz)
 		;
-		jogadaAleatoria(jogadaPreparativa, Matriz, NovaMatriz), !
+		jogadaPreparativa(Matriz, _, NovaMatriz)
 		;
-		jogadaAleatoria(jogadaQualquer, Matriz, NovaMatriz), !
+		jogadaQualquer(Matriz, _, NovaMatriz)
 	).
