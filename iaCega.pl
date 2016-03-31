@@ -42,13 +42,38 @@ estadoFromTeclado(Matriz, ListaPos) :-
 	% de posicoes validas
 	findall(PosLinear, jogadaPossivel(PosLinear, Matriz), ListaPos).
 
+
+estadosIaInformada(Matriz, ListaPos) :-
+	findall(PosLinear, jogada(Matriz, PosLinear, _), ListaPos).
+
+
 % cria um novo estado a partir das regras inseridas pelo teclado
 novoEstado(Matriz) :-
-	repeat, % existe um false no caso de nao ser uma lista
-	estadoFromTeclado(Matriz, ListaPos),
+	estadosIaInformada(Matriz, ListaPos),
 	assertz(estadoResposta(Matriz, ListaPos)),
-	salvarBD,
 	!.
+
+
+construirBD :-
+	% remove todas as respostas carregadas
+	retractall(estadoResposta(_, _)),
+	% começa a recursão com uma matriz vazia
+	matriz3x3Vazia(Matriz),
+	construirBD(Matriz)
+	;
+	salvarBD.
+
+
+construirBD(Matriz) :-
+	not(fimDeJogo(Matriz)),
+	% não posso ter uma resposta
+	not(estadoResposta(Matriz, _)),
+	novoEstado(Matriz),
+	% para todas as jogadas possiveis
+	jogadaPossivel(PosLinear, Matriz),
+	setMatriz(Matriz, PosLinear, NovaMatriz),
+	% chamo para esse novo estado
+	construirBD(NovaMatriz).
 
 
 marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-

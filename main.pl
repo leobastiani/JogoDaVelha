@@ -1,39 +1,80 @@
-?- ['ia', 'iaEstados', 'JogoDaVelha', 'Lista', 'Matriz'].
+?- ['iaInformada', 'iaCega', 'JogoDaVelha', 'Lista', 'Matriz'].
 
 main :- main(_).
 
 % para debug
 main(_) :-
+	test.
+
+
+test :-
+	testInformada,
+	testCega.
+
+testInformada :-
+	write('testInformada\n'),
 	matriz3x3Vazia(M1),
 	printJogo(M1),
 	nl,
-	jogada(M1, M2),
+	jogadaAleatoria(M1, _, M2),
 	printJogo(M2),
 	nl,
-	jogada(M2, M3),
+	jogadaAleatoria(M2, _, M3),
 	printJogo(M3),
 	nl,
-	jogada(M3, M4),
+	jogadaAleatoria(M3, _, M4),
 	printJogo(M4),
 	nl,
-	jogada(M4, M5),
+	jogadaAleatoria(M4, _, M5),
 	printJogo(M5),
 	nl,
-	jogada(M5, M6),
+	jogadaAleatoria(M5, _, M6),
 	printJogo(M6),
 	nl,
-	jogada(M6, M7),
+	jogadaAleatoria(M6, _, M7),
 	printJogo(M7),
 	nl,
-	jogada(M7, M8),
+	jogadaAleatoria(M7, _, M8),
 	printJogo(M8),
 	nl,
-	jogada(M8, M9),
+	jogadaAleatoria(M8, _, M9),
 	printJogo(M9),
 	nl,
-	jogada(M9, M10),
+	jogadaAleatoria(M9, _, M10),
 	printJogo(M10),
 	nl.
 
 
-test :- main.
+
+testCega :-
+	write('testCega\n'),
+	matriz3x3Vazia(M1),
+	printJogo(M1),
+	nl,
+	iaPlay(M1, M2),
+	printJogo(M2),
+	nl,
+	iaPlay(M2, M3),
+	printJogo(M3),
+	nl,
+	iaPlay(M3, M4),
+	printJogo(M4),
+	nl,
+	iaPlay(M4, M5),
+	printJogo(M5),
+	nl,
+	iaPlay(M5, M6),
+	printJogo(M6),
+	nl,
+	iaPlay(M6, M7),
+	printJogo(M7),
+	nl,
+	iaPlay(M7, M8),
+	printJogo(M8),
+	nl,
+	iaPlay(M8, M9),
+	printJogo(M9),
+	nl,
+	iaPlay(M9, M10),
+	printJogo(M10),
+	nl.

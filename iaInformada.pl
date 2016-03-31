@@ -3,13 +3,11 @@
 %          [[ , , ],               [[ , ,x],
 % Matriz =  [ ,x,o], e NovaMatriz = [ ,x,o],
 %           [x, ,o]]                [x, ,o]]
-jogadaVitoriosa(Matriz, PosLinear, NovaMatriz) :-
-	% descobrir oq eu tenho q jogar 
-	descobrirXouO(Matriz, XouO),
+jogadaGanhadora(Matriz, PosLinear, NovaMatriz) :-
 	% deve ser uma posi?o v?ida
 	jogadaPossivel(PosLinear, Matriz),
 	% vou marcar
-	setMatriz(XouO, Matriz, PosLinear, NovaMatriz),
+	setMatriz(Matriz, PosLinear, NovaMatriz),
 	% deve haver vit?ia na nova matriz
 	vitoria(NovaMatriz).
 
@@ -39,21 +37,18 @@ jogadaDefensiva(Matriz, PosLinear, NovaMatriz) :-
 % Matriz =  [ ,x,o], e NovaMatriz = [ ,x,o],
 %           [x, , ]]                [x, ,x]]
 jogadaPreparativa(Matriz, PosLinear, MinhaResposta) :-
-	descobrirXouO(Matriz, MeuXouO),
 	jogadaPossivel(PosLinear, Matriz),
-	setMatriz(MeuXouO, Matriz, PosLinear, MinhaResposta),
+	setMatriz(Matriz, PosLinear, MinhaResposta),
 	% se meu adversario n? consegue ganhar
-	not(jogadaVitoriosa(MinhaResposta, _, _)),
+	not(jogadaGanhadora(MinhaResposta, _, _)),
 	% se meu adversario deve fazer uma jogada defensiva
 	jogadaDefensiva(MinhaResposta, _, RespAdv),
 	% deve haver uma jogada vitoriosa depois de uma play
 	% o adv n? pode ter ganhado
 	(
-		% DUVIDA
-		% porque tem exclama?o?
-		jogadaVitoriosa(RespAdv, _, _)
-		;
-		jogadaPreparativa(RespAdv, _, _)
+		% se houver uma jogada vitoriosa ou eu conseguir emendar uma jogadaPreparativa
+		% retorno verdadeiro
+		(jogadaGanhadora(RespAdv, _, _) ; jogadaPreparativa(RespAdv, _, _)) -> true
 	).
 
 
@@ -65,11 +60,11 @@ jogadaPreparativa(Matriz, PosLinear, MinhaResposta) :-
 %  Matriz = [ ,x, ], e NovaMatriz = [ ,x,o],
 %           [ , , ]]                [ , , ]]
 jogadaPerdedora(Matriz, PosLinear, MinhaResposta) :-
-	descobrirXouO(Matriz, MeuXouO),
 	jogadaPossivel(PosLinear, Matriz),
-	setMatriz(MeuXouO, Matriz, PosLinear, MinhaResposta),
+	setMatriz(Matriz, PosLinear, MinhaResposta),
 	% se a resposta do advers?io for preparativa
-	jogadaPreparativa(MinhaResposta, _, _).
+	% retorno verdadeiro
+	jogadaPreparativa(MinhaResposta, _, _) -> true.
 
 
 % Uma jogada qualquer
@@ -79,28 +74,31 @@ jogadaPerdedora(Matriz, PosLinear, MinhaResposta) :-
 %           [ , , ]]                [ , ,o]]
 jogadaQualquer(Matriz, PosLinear, NovaMatriz) :-
 	jogadaPossivel(PosLinear, Matriz),
-	descobrirXouO(Matriz, XouO),
-	setMatriz(XouO, Matriz, PosLinear, NovaMatriz),
+	setMatriz(Matriz, PosLinear, NovaMatriz),
 	% se a nova matriz n? for perdedora
 	not(jogadaPerdedora(Matriz, PosLinear, NovaMatriz)).
 
 
 
-jogada(Matriz, NovaMatriz) :-
+jogada(Matriz, PosLinear, NovaMatriz) :-
 	not(fimDeJogo(Matriz)),
 	(
-		% DUVIDA
-		% gostaria que jogada fosse uma fun?o que me retornasse as jogadas possiveis
-		% mas se houver jogadas vitoriiosas, n? procuro mais
-		% se houver jogada defensiva, nao procuro mais
-		% se houver jogada preparativa, nao procuro mais
-		% por fim, fa? uma jogada qlqr
-		% ou seja, gostaria de usar o ; em jogada listando todas as jogadas
-		jogadaVitoriosa(Matriz, _, NovaMatriz)
-		;
-		jogadaDefensiva(Matriz, _, NovaMatriz)
-		;
-		jogadaPreparativa(Matriz, _, NovaMatriz)
-		;
-		jogadaQualquer(Matriz, _, NovaMatriz)
+		(
+			% se h?uma jogada vitoriosa, a resposta ?a jogada
+			jogadaGanhadora(Matriz, _, _) -> jogadaGanhadora(Matriz, PosLinear, NovaMatriz)
+			;
+			% caso contr?io, testa outra resposta
+			jogadaDefensiva(Matriz, _, _) -> jogadaDefensiva(Matriz, PosLinear, NovaMatriz)
+			;
+			jogadaPreparativa(Matriz, _, _) -> jogadaPreparativa(Matriz, PosLinear, NovaMatriz)
+			;
+			jogadaQualquer(Matriz, _, _) -> jogadaQualquer(Matriz, PosLinear, NovaMatriz)
+		)
 	).
+
+
+jogadaAleatoria(Matriz, PosLinear, NovaMatriz) :-
+	% obtenho todas as jogadas
+	findall([PosLinear, NovaMatriz], jogada(Matriz, PosLinear, NovaMatriz), ListaResultados),
+	% escolho um aleatoriamente
+	random_member([PosLinear, NovaMatriz], ListaResultados).

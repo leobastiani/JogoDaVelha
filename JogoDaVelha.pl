@@ -1,3 +1,4 @@
+% TODO!
 % deve ser implementada ainda
 printJogo(Matriz) :-
 	format('[~w,~w,~w]\n', Matriz),
@@ -16,8 +17,7 @@ descobrirXouO(Matriz, XouO) :-
 	(
 		% caso se NumZeros for impar, retorna x
 
-		% DUVIDA
-		% porque deve ser =:=??
+		% Utilizando a compara?o aritm?ica
 		(NumZeros mod 2) =:= 1,
 		XouO = x
 		;
@@ -25,6 +25,12 @@ descobrirXouO(Matriz, XouO) :-
 		XouO = o
 	), !.
 
+
+% retorna uma PosLinear em que eu posso ocupar
+jogadaPossivel(PosLinear, Matriz) :-
+	between(1, 9, PosLinear),
+	getMatriz(PosLinear, Matriz, Elem),
+	Elem == 0.
 
 
 % a lista de 3 elementos, quando for do tipo

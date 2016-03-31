@@ -77,6 +77,12 @@ converterPosLinear(PosLinear, Linha, Coluna) :-
 	PosLinear is (2-Linha)*3+Coluna+1.
 
 
+% set na matriz considerando a ordem de X e O
+setMatriz(Matriz, PosLinear, Resposta) :-
+	descobrirXouO(Matriz, XouO),
+	setMatriz(XouO, Matriz, PosLinear, Resposta).
+
+
 % seta na matriz passando a posicao linear
 setMatriz(XouO, Matriz, PosLinear, Resposta) :-
 	% primeiro converte a posicao linear
@@ -102,13 +108,6 @@ setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 	% troca a linha
 	nth0(IndexLin, Resposta, NovaLin, LinResto),
 	!.
-
-
-% retorna uma PosLinear em que eu posso ocupar
-jogadaPossivel(PosLinear, Matriz) :-
-	between(1, 9, PosLinear),
-	getMatriz(PosLinear, Matriz, Elem),
-	Elem == 0.
 
 
 % obtem um elemento da matriz atrav? da posi?o linear
