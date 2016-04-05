@@ -97,7 +97,7 @@ jogada(Matriz, PosLinear, NovaMatriz) :-
 	).
 
 
-jogadaAleatoria(Matriz, PosLinear, NovaMatriz) :-
+jogadaAleatoriaInformada(Matriz, PosLinear, NovaMatriz) :-
 	% obtenho todas as jogadas
 	findall([PosLinear, NovaMatriz], jogada(Matriz, PosLinear, NovaMatriz), ListaResultados),
 	% escolho um aleatoriamente

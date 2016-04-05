@@ -16,7 +16,8 @@
 % carrega todos os estados
 carregarBD :-
 	exists_file('JogoDaVelha.bd'),
-	consult('JogoDaVelha.bd')
+	consult('JogoDaVelha.bd'),
+	!
 	;
 	% mesmo se o arquivo nao existe
 	% e mesmo se a consulta falhar, devo retornar verdadeiro
@@ -29,18 +30,6 @@ salvarBD :-
 	listing(estadoResposta),
 	told.
 
-
-
-estadoFromTeclado(Matriz, ListaPos) :-
-	writeln('Por favor, digite um vetor de posicoes possiveis para esse estado.'),
-	writeln('Devem ser algo como [1, 3, 5, 6, 7],'),
-	writeln('seguindo a regra.'),
-	printJogo(Matriz),
-	read(ListaPos),
-	is_list(ListaPos), % garante que ListaPos eh uma lista
-	% garante que as posicoes desse vetor fazem parte da solucao
-	% de posicoes validas
-	findall(PosLinear, jogadaPossivel(PosLinear, Matriz), ListaPos).
 
 
 estadosIaInformada(Matriz, ListaPos) :-
@@ -57,7 +46,7 @@ novoEstado(Matriz) :-
 construirBD :-
 	% remove todas as respostas carregadas
 	retractall(estadoResposta(_, _)),
-	% começa a recursão com uma matriz vazia
+	% come? a recurs? com uma matriz vazia
 	matriz3x3Vazia(Matriz),
 	construirBD(Matriz)
 	;
@@ -66,8 +55,8 @@ construirBD :-
 
 construirBD(Matriz) :-
 	not(fimDeJogo(Matriz)),
-	% não posso ter uma resposta
-	not(estadoResposta(Matriz, _)),
+	% n? posso ter uma resposta
+	not(jogadaCega(Matriz, _)),
 	novoEstado(Matriz),
 	% para todas as jogadas possiveis
 	jogadaPossivel(PosLinear, Matriz),
@@ -78,48 +67,44 @@ construirBD(Matriz) :-
 
 marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta) :-
 	% posicaoo linear eh algo entre [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	random_member(PosLinear, Respostas),
+	member(PosLinear, Respostas),
 	% substituo o elemento na matriz
 	setMatriz(XouO, Matriz, PosLinear, MatrizResposta).
 
 
 % dada uma matriz, devo encontrar a reposta em estadoResposta
-iaMarcar(Matriz, XouO, MatrizResposta) :-
+marcarCega(Matriz, XouO, MatrizResposta) :-
 	% come? sem girar
-	iaMarcar(Matriz, XouO, MatrizResposta, 0).
+	marcarCega(Matriz, XouO, MatrizResposta, 0).
 
 
-iaMarcar(Matriz, XouO, MatrizResposta, NumGiradas) :-
+marcarCega(Matriz, XouO, MatrizResposta, NumGiradas) :-
 	% se ja possuo o estado, sem girar ja retorno ele
 	estadoResposta(Matriz, Respostas),
-	% encontrei a resposta, vou marc?la
-	marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
+	% encontrei a resposta, vou marca-la
+	marcarTendoResposta(Matriz, XouO, Respostas, _) -> marcarTendoResposta(Matriz, XouO, Respostas, MatrizResposta)
 	; % se n? achei a resposta, continuo procurando nas giradas
 	NumGiradas =< 3,
 	NumGiradasMasiUm is NumGiradas + 1,
 	matriz3x3GirarH(Matriz, MatrizGirada),
-	iaMarcar(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
+	marcarCega(MatrizGirada, XouO, MatrizGiradaMarcada, NumGiradasMasiUm),
 	matriz3x3GirarAH(MatrizGiradaMarcada, MatrizResposta).
 
 
 
 % deixa a IA determinar qual a peca q vai jogar
-iaPlay(Matriz, NovaMatriz) :-
+jogadaCega(Matriz, NovaMatriz) :-
 	descobrirXouO(Matriz, XouO),
-	iaPlay(Matriz, XouO, NovaMatriz).
+	jogadaCega(Matriz, XouO, NovaMatriz).
 
 
 % caso de existir um estadoResposta
-iaPlay(Matriz, XouO, NovaMatriz) :-
+jogadaCega(Matriz, XouO, NovaMatriz) :-
 	% tento marcar, se eu conseguir
 	% n? preciso tentar mais
-	iaMarcar(Matriz, XouO, NovaMatriz),
-	!.
+	marcarCega(Matriz, XouO, _) -> marcarCega(Matriz, XouO, NovaMatriz).
 
 
-% caso de nao souber onde jogar
-iaPlay(Matriz, XouO, NovaMatriz) :-
-	novoEstado(Matriz),
-	% agora que eu tenho o novo estado, devo jogar nele
-	iaPlay(Matriz, XouO, NovaMatriz),
-	!. % ja encontrei a solucao
+jogadaAleatoriaCega(Matriz, NovaMatriz) :-
+	findall(NovaMatriz, jogadaCega(Matriz, NovaMatriz), ListaResp),
+	random_member(NovaMatriz, ListaResp).
