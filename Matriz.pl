@@ -150,7 +150,7 @@ tiraZero(3, Matriz, Matriz) :- !.
 
 tiraZero(IndexLin, Matriz, MatrizSemZero) :- 
 	nth0(IndexLin, Matriz, Lin, LinResto),
-	substitui(0, ' ' , Lin, LinSemZero),
+	substitui(0, '_' , Lin, LinSemZero),
 	nth0(IndexLin, MatrizMeioSemZero, LinSemZero, LinResto),
 	NextIndexLin is IndexLin + 1,
 	tiraZero(NextIndexLin, MatrizMeioSemZero, MatrizSemZero), !.
@@ -164,7 +164,7 @@ substitui(X, NX, [A|C1], [A|C2]) :-
 
 printMatriz(M) :-
 	flatten(M, Vetor),
-	writef("%5l%5l%5l\n%3l%5l%9l\n%3l%5l%9l\n\n", Vetor).
+	writef("|%7c|%7c|%7c|\n|%7c|%7c|%7c|\n|%7c|%7c|%7c|\n\n", Vetor).
 
 /*% imprime a matriz
 printMatriz(M) :-
