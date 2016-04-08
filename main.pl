@@ -1,11 +1,35 @@
-?- ['iaInformada', 'iaCega', 'JogoDaVelha', 'Lista', 'Matriz'].
+?- ['IaInformada', 'iaCega', 'JogoDaVelha', 'Lista', 'Matriz'].
 
 main :- main(_).
 
 % para debug
 main(_) :-
-	test.
+	test2.
 
+test2 :- testPlayer.
+
+testPlayer :-
+	write('Teste testPlayer\n'),
+	write('Siga o modelo para jogar:\n\n'),
+	matriz3x3ExemploTeclado(M0),
+	printJogo(M0),
+	nl,
+	matriz3x3Vazia(M1),
+	printJogo(M1),
+	nl,
+	player(M1).
+
+player(Mx) :-
+	setMatrizPlayer(Mx, Mxmais1),
+	printJogo(Mxmais1),
+	nl,
+	pc(Mxmais1).
+
+pc(Mx) :-
+        jogadaAleatoriaInformada(Mx, _, Mxmais1),
+	printJogo(Mxmais1),
+	nl,
+	player(Mxmais1).
 
 test :-
 	testInformada,

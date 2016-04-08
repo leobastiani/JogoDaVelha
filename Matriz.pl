@@ -36,6 +36,13 @@ matriz3x3Exemplo([
 	[6, 7, 8]
 ]).
 
+matriz3x3ExemploTeclado([
+	[q, w, e],
+	[a, s, d],
+	[z, x, c]
+]).
+
+
 
 % se for digitado '1', o elemento deve ser inserido
 % naquela posi?o que est?mostrado
@@ -109,6 +116,27 @@ setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 	nth0(IndexLin, Resposta, NovaLin, LinResto),
 	!.
 
+%Seta a matriz quando eh a vez do player
+setMatrizPlayer(Matriz, NovaMatriz) :-
+	not(fimDeJogo(Matriz)),
+        %Le a tecla do usuario
+	read(Tecla),
+	format("~w\n", Tecla),
+	%Transforma em posicao linear
+	tecla2Poslinear(Tecla, Poslinear),
+	%Cria NovaMatriz com uma peça inserida na posicao
+	setMatriz(Matriz, Poslinear, NovaMatriz).
+
+%Fatos que transformam tecla em posicao linear
+tecla2Poslinear(z, 1) :- !.
+tecla2Poslinear(x, 2) :- !.
+tecla2Poslinear(c, 3) :- !.
+tecla2Poslinear(a, 4) :- !.
+tecla2Poslinear(s, 5) :- !.
+tecla2Poslinear(d, 6) :- !.
+tecla2Poslinear(q, 7) :- !.
+tecla2Poslinear(w, 8) :- !.
+tecla2Poslinear(e, 9) :- !.
 
 % obtem um elemento da matriz atrav? da posi?o linear
 getMatriz(PosLinear, Matriz, Elem) :-
@@ -119,4 +147,4 @@ getMatriz(PosLinear, Matriz, Elem) :-
 
 % imprime a matriz
 printMatriz(M) :-
-	format("[~w,\n ~w,\n ~w]\n", M).
+	format(" ~w\n ~w\n ~w\n", M).
