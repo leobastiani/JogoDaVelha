@@ -118,13 +118,12 @@ setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 
 %Seta a matriz quando eh a vez do player
 setMatrizPlayer(Matriz, NovaMatriz) :-
-	not(fimDeJogo(Matriz)),
-        %Le a tecla do usuario
+    %Le a tecla do usuario
 	read(Tecla),
-	format("~w\n", Tecla),
+	%format("~w\n", Tecla),
 	%Transforma em posicao linear
 	tecla2Poslinear(Tecla, Poslinear),
-	%Cria NovaMatriz com uma peça inserida na posicao
+	%Cria NovaMatriz com uma peÃ§a inserida na posicao
 	setMatriz(Matriz, Poslinear, NovaMatriz).
 
 %Fatos que transformam tecla em posicao linear
@@ -144,7 +143,33 @@ getMatriz(PosLinear, Matriz, Elem) :-
 	nth0(IndLinha, Matriz, Linha),
 	nth0(IndColuna, Linha, Elem).
 
+tiraZero(Matriz, MatrizSemZero) :-
+	tiraZero(0, Matriz, MatrizSemZero).
 
-% imprime a matriz
+tiraZero(3, Matriz, Matriz) :- !.
+
+tiraZero(IndexLin, Matriz, MatrizSemZero) :- 
+	nth0(IndexLin, Matriz, Lin, LinResto),
+	substitui(0, ' ' , Lin, LinSemZero),
+	nth0(IndexLin, MatrizMeioSemZero, LinSemZero, LinResto),
+	NextIndexLin is IndexLin + 1,
+	tiraZero(NextIndexLin, MatrizMeioSemZero, MatrizSemZero), !.
+
+
+substitui(X, NX, [ ], [ ]).
+substitui(X, NX, [X|C1], [NX|C2]) :- 
+	substitui(X, NX, C1, C2), !.
+substitui(X, NX, [A|C1], [A|C2]) :- 
+	substitui(X, NX, C1, C2).
+
 printMatriz(M) :-
-	format(" ~w\n ~w\n ~w\n", M).
+	flatten(M, Vetor),
+	writef("%5l%5l%5l\n%3l%5l%9l\n%3l%5l%9l\n\n", Vetor).
+
+/*% imprime a matriz
+printMatriz(M) :-
+	flatten(M, Vetor),
+	%format(" ~w ~w ~w\n ~w ~w ~w\n ~w ~w ~w\n", Vetor).
+	write("|---|---|---|\n"),
+	writef("| %n | %n | %n |\n|---|---|---|\n| %n | %n | %n |\n|---|---|---|\n| %n | %n | %n |\n", Vetor),
+	write("|---|---|---|\n\n").*/

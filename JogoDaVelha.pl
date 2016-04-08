@@ -1,8 +1,8 @@
 % TODO!
 % deve ser implementada ainda
 printJogo(Matriz) :-
-	format('[~w,~w,~w]\n', Matriz),
-	printMatriz(Matriz).
+	tiraZero(Matriz, MatrizSemZero),
+	printMatriz(MatrizSemZero).
 
 
 % dada uma matriz, XouO pode assumir x ou o,

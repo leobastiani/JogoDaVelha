@@ -6,32 +6,76 @@ main :- main(_).
 main(_) :-
 	test2.
 
-test2 :- testPlayer.
+test2 :- jogoInformada, jogoCega.
 
-testPlayer :-
-	write('Teste testPlayer\n'),
+%Gera e imprime o Modelo de teclas para jogar
+exemplo :- 
 	write('Siga o modelo para jogar:\n\n'),
 	matriz3x3ExemploTeclado(M0),
-	printJogo(M0),
-	nl,
+	printJogo(M0).
+
+/*--------------
+BUSCA INFORMADA
+--------------*/
+
+%Inicio do jogo
+jogoInformada :-
+	write('Busca Informada\n'),
+	exemplo,
 	matriz3x3Vazia(M1),
 	printJogo(M1),
-	nl,
-	player(M1).
+	playerInformada(M1); true.
 
-player(Mx) :-
+%Vez do jogador
+playerInformada(Mx) :-
+	%Soh joga se o jogo nao tiver acabado
+	not(fimDeJogo(Mx)),
+	jogadaPlayer(Mx, Mxmais1),
+	%Passa a vez para a IA
+	iaInformada(Mxmais1).
+
+%Jogada do Player
+jogadaPlayer(Mx, Mxmais1) :-
+	%setMatrizPlayer, le a tecla do usuario
+	%Caso a tecla digitada esteja correta, continua
+	%caso contrario, chama jogadaPlayer para ler outra tecla
 	setMatrizPlayer(Mx, Mxmais1),
-	printJogo(Mxmais1),
-	nl,
-	pc(Mxmais1).
+	printJogo(Mxmais1), !;
+	jogadaPlayer(Mx, Mxmais1).
 
-pc(Mx) :-
-        jogadaAleatoriaInformada(Mx, _, Mxmais1),
+%Jogada da IA
+iaInformada(Mx) :-
+    jogadaAleatoriaInformada(Mx, _, Mxmais1),
 	printJogo(Mxmais1),
-	nl,
-	player(Mxmais1).
+	playerInformada(Mxmais1).
 
-test :-
+/*--------------
+   BUSCA CEGA
+--------------*/
+%Inicio do jogo
+jogoCega :- 
+	carregarBD,
+	write('Busca Cega'),
+	exemplo,
+	matriz3x3Vazia(M1),
+	printJogo(M1),
+	playerCega(M1); true.
+
+%Vez do jogador
+playerCega(Mx) :-
+	%Soh joga se o jogo nao tiver acabado
+	not(fimDeJogo(Mx)),
+	jogadaPlayer(Mx, Mxmais1),
+	%Passa a vez para a IA
+	iaCega(Mxmais1).
+
+%Vez da IA
+iaCega(Mx) :-
+	jogadaAleatoriaCega(Mx, Mxmais1),
+	printJogo(Mxmais1),
+	playerCega(Mxmais1).
+
+/*test :-
 	testInformada,
 	testCega.
 
@@ -103,3 +147,4 @@ testCega :-
 	jogadaAleatoriaCega(M9, M10),
 	printJogo(M10),
 	nl.
+*/
