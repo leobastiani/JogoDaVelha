@@ -54,8 +54,8 @@ matriz3x3PosLinear([
 
 
 
-% ja sei como calcular o n?mero de zeros num vetor
-% soh transformar uma matriz em um vetor e contar
+
+% Transforma uma matriz em um vetor e conta
 % Resp deve ser uma variavel
 numZerosMatriz(Matriz, Resposta) :-
 	var(Resposta),
@@ -64,7 +64,7 @@ numZerosMatriz(Matriz, Resposta) :-
 
 
 /*
- * como converter uma posicao linar para index da linha e da coluna
+ * Converte uma posicao linar para index da linha e da coluna
  * retorna false se a posicaoo linear for invalida
  */
 converterPosLinear(PosLinear, Linha, Coluna) :-
@@ -119,32 +119,22 @@ setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 %Seta a matriz quando eh a vez do player
 setMatrizPlayer(Matriz, NovaMatriz) :-
     %Le a tecla do usuario
-	get_single_char(Tecla),
-	%format("~w\n", Tecla),
+	get_single_char(Tecla),	%'Tecla' eh o codigo do caracter lido
 	%Transforma em posicao linear
 	tecla2Poslinear(Tecla, Poslinear),
 	%Cria NovaMatriz com uma peça inserida na posicao
 	setMatriz(Matriz, Poslinear, NovaMatriz).
 
 %Fatos que transformam tecla em posicao linear
-tecla2Poslinear(122, 1) :- !.
-tecla2Poslinear(120, 2) :- !.
-tecla2Poslinear(99, 3) :- !.
-tecla2Poslinear(97, 4) :- !.
-tecla2Poslinear(115, 5) :- !.
-tecla2Poslinear(100, 6) :- !.
-tecla2Poslinear(113, 7) :- !.
-tecla2Poslinear(119, 8) :- !.
-tecla2Poslinear(101, 9) :- !.
-/*tecla2Poslinear(z, 1) :- !.
-tecla2Poslinear(x, 2) :- !.
-tecla2Poslinear(c, 3) :- !.
-tecla2Poslinear(a, 4) :- !.
-tecla2Poslinear(s, 5) :- !.
-tecla2Poslinear(d, 6) :- !.
-tecla2Poslinear(q, 7) :- !.
-tecla2Poslinear(w, 8) :- !.
-tecla2Poslinear(e, 9) :- !.*/
+tecla2Poslinear(122, 1) :- !.	%122 = 'z'
+tecla2Poslinear(120, 2) :- !.	%120 = 'x'
+tecla2Poslinear(99, 3) :- !.	%99 = 'c'
+tecla2Poslinear(97, 4) :- !.	%97 = 'a'
+tecla2Poslinear(115, 5) :- !.	%115 = 's'
+tecla2Poslinear(100, 6) :- !.	%100 = 'd'
+tecla2Poslinear(113, 7) :- !.	%113 = 'q'
+tecla2Poslinear(119, 8) :- !.	%119 = 'w'
+tecla2Poslinear(101, 9) :- !.	%101 = 'e'
 
 % obtem um elemento da matriz atrav? da posi?o linear
 getMatriz(PosLinear, Matriz, Elem) :-
@@ -152,11 +142,17 @@ getMatriz(PosLinear, Matriz, Elem) :-
 	nth0(IndLinha, Matriz, Linha),
 	nth0(IndColuna, Linha, Elem).
 
+%Substitui os elementos 0 da matriz pelo caracter '_'
+%para melhor visualizacao quano imprimir na tela
 tiraZero(Matriz, MatrizSemZero) :-
-	tiraZero(0, Matriz, MatrizSemZero).
+	tiraZero(0, Matriz, MatrizSemZero). %Começa com a linha 0
 
+%Se o indice da linha eh 3, acabou
 tiraZero(3, Matriz, Matriz) :- !.
 
+%Se o indice nao for 3, pega a linha de numero IndexLin,
+%substitui seus elementos 0 por '_', insere novamente na matriz
+%e faz o mesmo para proxima linha.
 tiraZero(IndexLin, Matriz, MatrizSemZero) :- 
 	nth0(IndexLin, Matriz, Lin, LinResto),
 	substitui(0, '_' , Lin, LinSemZero),
@@ -164,21 +160,15 @@ tiraZero(IndexLin, Matriz, MatrizSemZero) :-
 	NextIndexLin is IndexLin + 1,
 	tiraZero(NextIndexLin, MatrizMeioSemZero, MatrizSemZero), !.
 
-
+%Substitui todos os elementos de uma lista que valem X por NX
+%substitui(+Elemento, +NovoElemento, +Lista, -NovaLista)
 substitui(_, _, [ ], [ ]).
 substitui(X, NX, [X|C1], [NX|C2]) :- 
 	substitui(X, NX, C1, C2), !.
 substitui(X, NX, [A|C1], [A|C2]) :- 
 	substitui(X, NX, C1, C2).
 
+%Imprime a matriz no formato de tabuleiro
 printMatriz(M) :-
 	flatten(M, Vetor),
 	writef("|%7c|%7c|%7c|\n|%7c|%7c|%7c|\n|%7c|%7c|%7c|\n\n", Vetor).
-
-/*% imprime a matriz
-printMatriz(M) :-
-	flatten(M, Vetor),
-	%format(" ~w ~w ~w\n ~w ~w ~w\n ~w ~w ~w\n", Vetor).
-	write("|---|---|---|\n"),
-	writef("| %n | %n | %n |\n|---|---|---|\n| %n | %n | %n |\n|---|---|---|\n| %n | %n | %n |\n", Vetor),
-	write("|---|---|---|\n\n").*/

@@ -1,3 +1,4 @@
+%Imprime o jogo
 printJogo(Matriz) :-
 	tiraZero(Matriz, MatrizSemZero),
 	printMatriz(MatrizSemZero).

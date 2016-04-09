@@ -1,0 +1,20 @@
+___________________________________________
+			Trabalho Prático 1
+		  Inteligência Artificial
+		  **** JOGO DA VELHA ****
+___________________________________________
+
+*Grupo 8:
+
+Fábio Satoshi Sumida           8910542 
+Guilherme José Acra            7150306
+Leonardo Guarnieri de Bastiani 8910434
+Paulo Humberto Sapio de Morais 8910591
+Thiago Ochsendorf Pacheco      9036632
+
+*Para rodar basta abrir o arquivo JOGO.pl
+com o SWI-Prolog.
+
+*No decorrer do programa não é necessário
+o uso de ponto e da tecla ENTER após cada 
+entrada.
