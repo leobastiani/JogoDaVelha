@@ -1,5 +1,3 @@
-% TODO!
-% deve ser implementada ainda
 printJogo(Matriz) :-
 	tiraZero(Matriz, MatrizSemZero),
 	printMatriz(MatrizSemZero).
@@ -101,4 +99,13 @@ fimDeJogo(Matriz) :-
 	(
 		numZerosMatriz(Matriz, NumZeros),
 		NumZeros == 0
+	).
+
+%Fim de jogo que imprime o resultado.
+fimDeJogo(Matriz, Nome) :-
+	(vitoria(Matriz), writef("%w ganhou!!\n\n", [Nome]), sleep(3))
+	;
+	(
+		numZerosMatriz(Matriz, NumZeros),
+		NumZeros == 0, write('Deu velha!!\n\n'), sleep(3)
 	).

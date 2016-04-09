@@ -81,7 +81,8 @@ jogadaQualquer(Matriz, PosLinear, NovaMatriz) :-
 
 
 jogada(Matriz, PosLinear, NovaMatriz) :-
-	not(fimDeJogo(Matriz)),
+	%Verifica se o player ganhou
+	not(fimDeJogo(Matriz, 'Player')),
 	(
 		(
 			% se h?uma jogada vitoriosa, a resposta ?a jogada

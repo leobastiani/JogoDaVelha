@@ -94,6 +94,8 @@ marcarCega(Matriz, XouO, MatrizResposta, NumGiradas) :-
 
 % deixa a IA determinar qual a peca q vai jogar
 jogadaCega(Matriz, NovaMatriz) :-
+	%Verifica de o Player ganhou
+	not(fimDeJogo(Matriz, 'Jogador')),
 	descobrirXouO(Matriz, XouO),
 	jogadaCega(Matriz, XouO, NovaMatriz).
 
