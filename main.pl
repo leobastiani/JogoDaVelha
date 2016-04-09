@@ -2,21 +2,50 @@
 
 main :- main(_).
 
-% para debug
 main(_) :-
-	playerXIA.
-
-%Cabeçalho
-playerXIA :- 
 	write('--------------------------------\n'),
 	write('\tJOGO DA VELHA\n'),
 	write('--------------------------------\n\n'),
+	quemJoga(Quem),
+	(
+		(Quem == 49, playerXIA), !;
+		(Quem == 50, iaXia)
+	).
+
+quemJoga(Quem) :-
+	write('Escolha um dos modos:\n1 - Jogador X IA\n2 - IA X IA '),
+	repeat,
+	get_single_char(Quem),
+	valida(Quem), !.
+
+valida(49) :- !.
+valida(50) :- !.
+
+/*************************
+	### PLAYER X IA ###
+*************************/
+
+%Cabeçalho
+playerXIA :- 
 	exemplo,
-	jogoInformada, jogoCega.
+	quemComeca(Quem, QuemNao),
+	writef("\n%w inicia com 'x'. %w joga com 'o'!!\n\n", [Quem, QuemNao]),
+	sleep(2),
+	jogoInformada(Quem), jogoCega(Quem).
+
+%Quem comeca a jogar
+quemComeca(Quem, QuemNao) :-
+	write('Voce quer jogar primeiro (s/n)? '),
+	repeat,
+	get_single_char(Tecla),
+	tecla2Quems(Tecla, Quem, QuemNao), !.
+
+tecla2Quems(115, 'Voce', 'IA') :- !.
+tecla2Quems(110, 'IA', 'Voce') :- !.
 
 %Gera e imprime o Modelo de teclas para jogar
 exemplo :- 
-	write('Siga o modelo de teclas para jogar:\n\n'),
+	write('\n\nSiga o modelo de teclas para jogar:\n\n'),
 	matriz3x3ExemploTeclado(M0),
 	printJogo(M0),
 	nl.
@@ -26,17 +55,20 @@ BUSCA INFORMADA
 --------------*/
 
 %Inicio do jogo
-jogoInformada :-
+jogoInformada(Quem) :-
 	write('***Busca Informada***\n\n'),
 	matriz3x3Vazia(M1),
 	printJogo(M1),
-	playerInformada(M1); true.
+	(
+		(Quem == 'Voce', playerInformada(M1)), !;
+		(Quem == 'IA', iaInformada(M1))
+	); true.
 
 %Vez do jogador
 playerInformada(Mx) :-
 	%Verifica se a IA ganhou
 	not(fimDeJogo(Mx, 'IA')),
-	write('Sua Jogada:\n'),
+	write('Sua Jogada: '),
 	jogadaPlayer(Mx, Mxmais1),
 	%Passa a vez para a IA
 	iaInformada(Mxmais1).
@@ -47,6 +79,7 @@ jogadaPlayer(Mx, Mxmais1) :-
 	%Caso a tecla digitada esteja correta, continua
 	%caso contrario, chama jogadaPlayer para ler outra tecla
 	setMatrizPlayer(Mx, Mxmais1),
+	nl,
 	printJogo(Mxmais1), !;
 	jogadaPlayer(Mx, Mxmais1).
 
@@ -61,19 +94,24 @@ iaInformada(Mx) :-
 /*--------------
    BUSCA CEGA
 --------------*/
+
 %Inicio do jogo
-jogoCega :- 
+jogoCega(Quem) :- 
 	carregarBD,
 	write('***Busca Cega***\n\n'),
 	matriz3x3Vazia(M1),
 	printJogo(M1),
-	playerCega(M1); true.
+	(
+		(Quem == 'Voce', playerCega(M1)), !;
+		(Quem == 'IA', iaCega(M1))
+	)
+	; true.
 
 %Vez do jogador
 playerCega(Mx) :-
 	%Verifica de a IA ganhou
 	not(fimDeJogo(Mx, 'IA')),
-	write('Sua Jogada:\n'),
+	write('Sua Jogada: '),
 	jogadaPlayer(Mx, Mxmais1),
 	%Passa a vez para a IA
 	iaCega(Mxmais1).
@@ -86,76 +124,44 @@ iaCega(Mx) :-
 	printJogo(Mxmais1),
 	playerCega(Mxmais1).
 
-/*test :-
-	testInformada,
-	testCega.
+/*************************
+	  ### IA X IA ###
+*************************/
 
-testInformada :-
-	write('testInformada\n'),
+iaXia :- jogoInformada, jogoCega.
+
+jogoInformada :-
+	write('\n***Busca Informada***\n\n'),
 	matriz3x3Vazia(M1),
 	printJogo(M1),
-	nl,
-	jogadaAleatoriaInformada(M1, _, M2),
-	printJogo(M2),
-	nl,
-	jogadaAleatoriaInformada(M2, _, M3),
-	printJogo(M3),
-	nl,
-	jogadaAleatoriaInformada(M3, _, M4),
-	printJogo(M4),
-	nl,
-	jogadaAleatoriaInformada(M4, _, M5),
-	printJogo(M5),
-	nl,
-	jogadaAleatoriaInformada(M5, _, M6),
-	printJogo(M6),
-	nl,
-	jogadaAleatoriaInformada(M6, _, M7),
-	printJogo(M7),
-	nl,
-	jogadaAleatoriaInformada(M7, _, M8),
-	printJogo(M8),
-	nl,
-	jogadaAleatoriaInformada(M8, _, M9),
-	printJogo(M9),
-	nl,
-	jogadaAleatoriaInformada(M9, _, M10),
-	printJogo(M10),
-	nl.
+	iaInformada(M1, 1); true.
 
+%Num_IA = Numero da IA que estah jogando
+iaInformada(Mx, Num_IA) :-
+	jogadaAleatoriaInformada(Mx, _, Mxmais1),
+    sleep(3),
+    writef("Jogada da IA %w:\n", [Num_IA]),
+	printJogo(Mxmais1),
+	proxJogar(Num_IA, Prox_Num_IA),
+	iaInformada(Mxmais1, Prox_Num_IA).
 
+proxJogar(1, 2):- !.
+proxJogar(2, 1):- !.
 
-testCega :-
+jogoCega :-
 	carregarBD,
-	write('testCega\n'),
+	write('***Busca Cega***\n\n'),
 	matriz3x3Vazia(M1),
 	printJogo(M1),
-	nl,
-	jogadaAleatoriaCega(M1, M2),
-	printJogo(M2),
-	nl,
-	jogadaAleatoriaCega(M2, M3),
-	printJogo(M3),
-	nl,
-	jogadaAleatoriaCega(M3, M4),
-	printJogo(M4),
-	nl,
-	jogadaAleatoriaCega(M4, M5),
-	printJogo(M5),
-	nl,
-	jogadaAleatoriaCega(M5, M6),
-	printJogo(M6),
-	nl,
-	jogadaAleatoriaCega(M6, M7),
-	printJogo(M7),
-	nl,
-	jogadaAleatoriaCega(M7, M8),
-	printJogo(M8),
-	nl,
-	jogadaAleatoriaCega(M8, M9),
-	printJogo(M9),
-	nl,
-	jogadaAleatoriaCega(M9, M10),
-	printJogo(M10),
-	nl.
-*/
+	iaCega(M1, 1); true.
+
+%Num_IA = Numero da IA que estah jogando
+iaCega(Mx, Num_IA) :-
+	jogadaAleatoriaCega(Mx, Mxmais1),
+    sleep(3),
+    writef("Jogada da IA %w:\n", [Num_IA]),
+	printJogo(Mxmais1),
+	proxJogar(Num_IA, Prox_Num_IA),
+	iaCega(Mxmais1, Prox_Num_IA).
+
+	

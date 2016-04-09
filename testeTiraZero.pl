@@ -1,2 +1,3 @@
-teste(Nome) :-
-	writef("%w ganhou!!\n\n", [Nome]).
+teste :-
+	get_single_char(T),
+	writef("Teste: %w\n", [T]).

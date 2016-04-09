@@ -119,7 +119,7 @@ setMatriz(XouO, Matriz, IndexLin, IndexCol, Resposta) :-
 %Seta a matriz quando eh a vez do player
 setMatrizPlayer(Matriz, NovaMatriz) :-
     %Le a tecla do usuario
-	read(Tecla),
+	get_single_char(Tecla),
 	%format("~w\n", Tecla),
 	%Transforma em posicao linear
 	tecla2Poslinear(Tecla, Poslinear),
@@ -127,7 +127,16 @@ setMatrizPlayer(Matriz, NovaMatriz) :-
 	setMatriz(Matriz, Poslinear, NovaMatriz).
 
 %Fatos que transformam tecla em posicao linear
-tecla2Poslinear(z, 1) :- !.
+tecla2Poslinear(122, 1) :- !.
+tecla2Poslinear(120, 2) :- !.
+tecla2Poslinear(99, 3) :- !.
+tecla2Poslinear(97, 4) :- !.
+tecla2Poslinear(115, 5) :- !.
+tecla2Poslinear(100, 6) :- !.
+tecla2Poslinear(113, 7) :- !.
+tecla2Poslinear(119, 8) :- !.
+tecla2Poslinear(101, 9) :- !.
+/*tecla2Poslinear(z, 1) :- !.
 tecla2Poslinear(x, 2) :- !.
 tecla2Poslinear(c, 3) :- !.
 tecla2Poslinear(a, 4) :- !.
@@ -135,7 +144,7 @@ tecla2Poslinear(s, 5) :- !.
 tecla2Poslinear(d, 6) :- !.
 tecla2Poslinear(q, 7) :- !.
 tecla2Poslinear(w, 8) :- !.
-tecla2Poslinear(e, 9) :- !.
+tecla2Poslinear(e, 9) :- !.*/
 
 % obtem um elemento da matriz atrav? da posi?o linear
 getMatriz(PosLinear, Matriz, Elem) :-
@@ -156,7 +165,7 @@ tiraZero(IndexLin, Matriz, MatrizSemZero) :-
 	tiraZero(NextIndexLin, MatrizMeioSemZero, MatrizSemZero), !.
 
 
-substitui(X, NX, [ ], [ ]).
+substitui(_, _, [ ], [ ]).
 substitui(X, NX, [X|C1], [NX|C2]) :- 
 	substitui(X, NX, C1, C2), !.
 substitui(X, NX, [A|C1], [A|C2]) :- 
