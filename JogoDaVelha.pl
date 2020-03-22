@@ -104,9 +104,9 @@ fimDeJogo(Matriz) :-
 
 %Fim de jogo que imprime o resultado.
 fimDeJogo(Matriz, Nome) :-
-	(vitoria(Matriz), writef("%w ganhou!!\n\n", [Nome]), sleep(3))
+	(vitoria(Matriz), writef("%w ganhou!!\n\n", [Nome]))
 	;
 	(
 		numZerosMatriz(Matriz, NumZeros),
-		NumZeros == 0, write('Deu velha!!\n\n'), sleep(3)
+		NumZeros == 0, write('Deu velha!!\n\n')
 	).

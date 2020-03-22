@@ -42,7 +42,6 @@ playerXIA :-
 	exemplo,
 	quemComeca(Quem, QuemNao),
 	writef("\n\n%w inicia com 'x'. %w joga com 'o'!!\n\n", [Quem, QuemNao]),
-	sleep(2),
 	jogoInformada(Quem), jogoCega(Quem).
 
 %Quem comeca a jogar
@@ -98,7 +97,6 @@ jogadaPlayer(Mx, Mxmais1) :-
 %Jogada da IA
 iaInformada(Mx) :-
     jogadaAleatoriaInformada(Mx, _, Mxmais1),
-    sleep(3),
     write('Jogada da IA:\n'),
 	printJogo(Mxmais1),
 	playerInformada(Mxmais1).
@@ -131,7 +129,6 @@ playerCega(Mx) :-
 %Vez da IA
 iaCega(Mx) :-
 	jogadaAleatoriaCega(Mx, Mxmais1),
-	sleep(3),
 	write('Jogada da IA:\n'),
 	printJogo(Mxmais1),
 	playerCega(Mxmais1).
@@ -155,7 +152,6 @@ jogoInformada :-
 %Num_IA = Numero da IA que estah jogando
 iaInformada(Mx, Num_IA) :-
 	jogadaAleatoriaInformada(Mx, _, Mxmais1),
-    sleep(3),
     writef("Jogada da IA %w:\n", [Num_IA]),
 	printJogo(Mxmais1),
 	proxJogar(Num_IA, Prox_Num_IA),
@@ -179,7 +175,6 @@ jogoCega :-
 %Num_IA = Numero da IA que estah jogando
 iaCega(Mx, Num_IA) :-
 	jogadaAleatoriaCega(Mx, Mxmais1),
-    sleep(3),
     writef("Jogada da IA %w:\n", [Num_IA]),
 	printJogo(Mxmais1),
 	proxJogar(Num_IA, Prox_Num_IA),
