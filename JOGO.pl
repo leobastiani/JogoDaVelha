@@ -38,7 +38,7 @@ valida(51) :- !. %51 = char '3'
 *************************/
 
 %Cabeçalho
-playerXIA :- 
+playerXIA :-
 	exemplo,
 	quemComeca(Quem, QuemNao),
 	writef("\n\n%w inicia com 'x'. %w joga com 'o'!!\n\n", [Quem, QuemNao]),
@@ -55,7 +55,7 @@ tecla2Quems(115, 'Voce', 'IA') :- !. %115 = 's'
 tecla2Quems(110, 'IA', 'Voce') :- !. %110 = 'n'
 
 %Gera e imprime o Modelo de teclas para jogar
-exemplo :- 
+exemplo :-
 	write('\n\nSiga o modelo de teclas para jogar:\n\n'),
 	matriz3x3ExemploTeclado(M0),
 	printJogo(M0),
@@ -106,7 +106,7 @@ iaInformada(Mx) :-
 --------------*/
 
 %Inicio do jogo
-jogoCega(Quem) :- 
+jogoCega(Quem) :-
 	carregarBD,
 	write('*** Busca Cega ***\n\n'),
 	matriz3x3Vazia(M1),
